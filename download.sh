@@ -1,16 +1,24 @@
 #!/bin/bash
 
+set -e
+
 # args:
-dir=$1
-name=$2
-url=$3
+name=$1
+url=$2
+post=$3
 
-HELP="args: ./download.sh \$dir \$name \$url"
+HELP="args: ./download.sh \$name \$url [\$post]"
 
-if [ -z "$dir" ]
+if [ -z "$post" ]
 then
-	echo $HELP
-	exit 1
+	touch -a last
+	LAST=`cat last`
+	if [ -z "$LAST" ]
+	then
+		echo "Last file not recorded, you have to set the \$post"
+		exit 1
+	fi
+	post=$LAST
 fi
 
 if [ -z "$name" ]
@@ -25,9 +33,7 @@ then
 	exit 1
 fi
 
-set -e
-
 # download
-wget -O "source/_posts/$1/$2" "$3"
+wget -O "source/_posts/$post/$name" "$url"
 # add into file
-echo "![]($1/$2)" >> "source/_posts/$1.md"
+echo "![]($post/$name)" >> "source/_posts/$post.md"
